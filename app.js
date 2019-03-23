@@ -63,7 +63,6 @@ db.serialize(() => {
   `INSERT INTO users(id,username) 
   VALUES` + placeholders2
   console.log(query_3);
-  //let vars = test.map((item) => {item.id, item.invalid_username, date.toISOString(), date.toISOString()});
   console.log(test2);
   db.run(query_3, test2, function(err) {
     if (err) {
@@ -101,22 +100,41 @@ db.serialize(() => {
     }
     console.log(row.id + "\t" + row.username);
   });
-  console.log('seperator');
-  
+
   // find all usernames that are disallowed
   let query_5 =
-  `SELECT id, username
+  `SELECT users.id, users.username
   FROM users
-  WHERE username IN (
-    SELECT invalid_username
-    FROM disallowed_usernames
-  )
+  JOIN disallowed_usernames
+  ON users.username = disallowed_usernames.invalid_username
+  ORDER BY users.username ASC
   `
   db.each(query_5, (err,row) => {
     if (err) {
       console.error(err.message);
     }
-    console.log(row.id + "\t" + row.username);
+    if (row)
+      console.log(row.id + "\t" + row.username);
+  });
+  let test3 = [96, 'new_test5', 97, 'new_test6', 98, 'new_test7', 99, 'new_test8'];
+  let test4 = [96,97,98,99]
+  let query_6 =
+  `UPDATE disallowed_usernames
+      SET invalid_username = (case
+  `;
+  for (let i = 0; i < test3.length/2; i++) {
+    query_6 += `when id = (?) then (?) \n`
+  }
+  query_6 += 
+  `end)
+  WHERE id IN (`+test4.map((val) => '(?)').join(',')+')'
+  test3 = test3.concat(test4);
+  console.log(query_6);
+  db.run(query_6, test3, function(err) {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log(`updated multiple items to disallowed_usernames ${this.changes}`);
   });
 });
  
