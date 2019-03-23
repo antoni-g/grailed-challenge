@@ -100,7 +100,24 @@ db.serialize(() => {
       console.error(err.message);
     }
     console.log(row.id + "\t" + row.username);
-  })
+  });
+  console.log('seperator');
+  
+  // find all usernames that are disallowed
+  let query_5 =
+  `SELECT id, username
+  FROM users
+  WHERE username IN (
+    SELECT invalid_username
+    FROM disallowed_usernames
+  )
+  `
+  db.each(query_5, (err,row) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log(row.id + "\t" + row.username);
+  });
 });
  
 // close the database connection
