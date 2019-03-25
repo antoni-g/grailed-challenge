@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.6.2",
+    "async-waterfall": "^0.1.5",
+    "paralleljs": "^0.2.1",
     "sqlite": "^3.0.3",
     "sqlite3": "^4.0.6"
   }

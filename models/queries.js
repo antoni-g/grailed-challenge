@@ -41,13 +41,13 @@ var update_vals = function(table, column, values, ids) {
 // returns a sql query that finds matches table A and table B
 // where values in columnA appended with a wildcard match columnB
 var select_matches_extend = function(tableA, tableB, columnA, columnB) {
-  return `SELECT id, 
-  FROM `+tableA+`
+  return `SELECT id, orig.`+columnA+`
+  FROM `+tableA+` orig
   INNER JOIN (
-    SELECT `+columnB+`
+    SELECT DISTINCT `+columnB+`
     FROM `+tableB+`
   ) match
-  ON `+tableA+`.`+columnA+` LIKE match.`+columnB+` || '_%'`
+  ON orig.`+columnA+` LIKE match.`+columnB+` || '_%'`
 }
 
 // table of all exported functions
