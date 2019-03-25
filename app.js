@@ -6,11 +6,11 @@ let db = new sqlite3.Database('./db/grailed-exercise-copy.sqlite3', (err) => {
   if (err) {
     return console.error(err.message);
   }
-  console.log('Connected to the in-memory SQlite database.');
+  console.log('Connected to the in-memory SQlite database: ' + db.filename);
 });
 
 db.serialize(() => {
-  
+
 });
  
 // close the database connection
@@ -18,5 +18,5 @@ db.close((err) => {
   if (err) {
     return console.error(err.message);
   }
-  console.log('Closed the database connection.');
+  console.log('Closed the in-memory SQlite database connection: ' + db.filename);
 });
