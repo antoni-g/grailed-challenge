@@ -1,6 +1,7 @@
 const async = require("async");
 const sqlite3 = require('sqlite3').verbose();
 const queries = require('./queries.js'); 
+const log = require('debug')('grailed_interface');
 
 /*
 	Write a function that finds all users with disallowed usernames. 
@@ -49,6 +50,29 @@ var collision_resolution = function(name, dryRun, finalCB) {
 */
 var disallowed_resolution = function(name, dryRun, finalCB) {
   _conflictResolution(name, dryRun, 'invalid usernames', finalCB);
+}
+
+// externalize a function to find duplicates for testing
+var select_duplicates = function(name, finalCB) {
+  async.waterfall([
+    // first instantiate the db
+    function(callback) {
+      _instantiateDB(name,(err,db) => {
+        callback(err,db)
+      });
+    },
+    // return all duplicate rows
+    function(db,callback) {
+      // case logic
+      let targetQuery = queries.select_duplicates('users','username');
+      db.all(targetQuery, (err, rows) => {
+        callback(err,rows);
+      });
+    }
+  ], function(err, result) {
+    // finally, pass over the result
+    finalCB(err,result);
+  });
 }
 
 // since both questions 2 and 3 are the same operation on different data sets
@@ -134,7 +158,7 @@ function _renameCollisions(db, rows, collisionRows, dryRun, callback) {
         callback(err);
       }
       else {
-        console.log(msg);
+        log(msg);
         callback(null,rows);
       }
     });
@@ -194,7 +218,7 @@ function _instantiateDB(name, callback) {
       callback(err,null);
     }
     else {
-      console.log('Connected to the in-memory SQlite database: ' + db.filename);
+      log('Connected to the in-memory SQlite database: ' + db.filename);
       callback(null,db);
     }    
   });
@@ -207,7 +231,7 @@ function _closeDB(db, callback) {
       callback(err);
     }
     else {
-      console.log('Closed the connection to the in-memory SQlite database: ' + db.filename);
+      log('Closed the connection to the in-memory SQlite database: ' + db.filename);
       callback();
     }
   });
@@ -217,7 +241,8 @@ function _closeDB(db, callback) {
 const calls = {
   disallowed_usernames: disallowed_usernames,
   collision_resolution: collision_resolution,
-  disallowed_resolution: disallowed_resolution
+  disallowed_resolution: disallowed_resolution,
+  select_duplicates: select_duplicates
 }
 
 module.exports = calls;

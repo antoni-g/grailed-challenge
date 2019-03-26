@@ -54,11 +54,12 @@ const grailed_interface = require('./models/grailed_interface.js');
 // });
 
 
-grailed_interface.disallowed_usernames('./db/grailed-exercise.sqlite3', (err,result) => {
+grailed_interface.select_duplicates('./db/grailed-exercise-live.sqlite3', (err,result) => {
   if (err) {
     console.log(err);
   }
   else {
+    console.log(result.length);
     console.log(result);
   }
 });
