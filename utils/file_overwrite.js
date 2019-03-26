@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var copy_file = function(src,tgt,callback) {
+var copyFile = function(src,tgt,callback) {
   fs.copyFile(src, tgt, (err) => {
     if (err) {
       callback(err);
@@ -11,7 +11,7 @@ var copy_file = function(src,tgt,callback) {
 	});
 }
 
-var del_file = function(tgt,callback) {
+var delFile = function(tgt,callback) {
   fs.unlink(tgt, (err) => {
     if (err) {
       callback(err);
@@ -24,8 +24,8 @@ var del_file = function(tgt,callback) {
 
 // table of all exported functions
 const calls = {
-  copy_file: copy_file,
-  del_file: del_file
+  copy_file: copyFile,
+  del_file: delFile
 }
 
 module.exports = calls;

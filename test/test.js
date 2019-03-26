@@ -1,22 +1,16 @@
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 const grailed_interface = require('./../models/grailed_interface.js');
-const copy_file = require('./../utils/file_overwrite.js')
+const copy_file = require('./../utils/file_overwrite.js');
 
 // Question 1
 describe('question 1 - #disallowed_usernames()', function() {
   context('', function() {
     it('create a fresh copy of the database', function(done) {
-      copy_file.copy_file('./db/grailed-exercise.sqlite3','./db/grailed-exercise-test.sqlite3', (err,res) => {
-        if (err) return done(err);
-        expect(res)
-          .to.be.a('string')
-          .and.equal('./db/grailed-exercise.sqlite3 successfully copied into ./db/grailed-exercise-test.sqlite3');
-        done();
-      });
+      resetDB(done);
     });
-    it('SELECT usernames in users that are in disallowed_usernames',function(done) {
-      select_disallowed_usernames(done);
+    it('SELECT and verify usernames in users that are in disallowed_usernames',function(done) {
+      selectDisallowedUsernames(done);
     });
 	});
 });
@@ -27,13 +21,7 @@ describe('question 1 - #disallowed_usernames()', function() {
 describe('question 2 - #collision_resolution()', function() {
   context('', function() {
     it('create a fresh copy of the database', function(done) {
-      copy_file.copy_file('./db/grailed-exercise.sqlite3','./db/grailed-exercise-test.sqlite3', (err,res) => {
-        if (err) return done(err);
-        expect(res)
-          .to.be.a('string')
-          .and.equal('./db/grailed-exercise.sqlite3 successfully copied into ./db/grailed-exercise-test.sqlite3');
-        done();
-      });
+      resetDB(done);
     });
     it('verify that username collisions exist in the cb before the UPDATE statement', function(done) {
       grailed_interface.select_duplicates('./db/grailed-exercise-test.sqlite3', (err,res) => {
@@ -108,16 +96,10 @@ describe('question 2 - #collision_resolution()', function() {
 describe('question 3 - #disallowed_resolution()', function() {
   context('', function() {
     it('create a fresh copy of the database', function(done) {
-      copy_file.copy_file('./db/grailed-exercise.sqlite3','./db/grailed-exercise-test.sqlite3', (err,res) => {
-        if (err) return done(err);
-        expect(res)
-          .to.be.a('string')
-          .and.equal('./db/grailed-exercise.sqlite3 successfully copied into ./db/grailed-exercise-test.sqlite3');
-        done();
-      });
+      resetDB(done);
     });
     it('verify that disallowed usernames exist in the db',function(done) {
-      select_disallowed_usernames(done);
+      selectDisallowedUsernames(done);
     });
     it('verify that the dry run returns the correct number of disallowed_usernames', function(done) {
       grailed_interface.disallowed_resolution('./db/grailed-exercise-test.sqlite3', true, (err,res) => {
@@ -171,10 +153,19 @@ describe('question 3 - #disallowed_resolution()', function() {
 
 
 
-
+// function that resets the test database
+function resetDB(done) {
+  copy_file.copy_file('./db/grailed-exercise.sqlite3','./db/grailed-exercise-test.sqlite3', (err,res) => {
+    if (err) return done(err);
+    expect(res)
+      .to.be.a('string')
+      .and.equal('./db/grailed-exercise.sqlite3 successfully copied into ./db/grailed-exercise-test.sqlite3');
+    done();
+  });
+}
 
 // function that wraps logic used for tests in both question 1 and 3
-function select_disallowed_usernames(done) {
+function selectDisallowedUsernames(done) {
   grailed_interface.disallowed_usernames('./db/grailed-exercise-test.sqlite3', (err,res) => {
     if (err) return done(err);
     // hardcoded copy of the what the result should be from the original database

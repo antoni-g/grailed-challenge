@@ -7,7 +7,7 @@ const log = require('debug')('grailed_interface');
 	Write a function that finds all users with disallowed usernames. 
 	Disallowed usernames can be found in the `disallowed_usernames` table.
 */
-var disallowed_usernames = function(name, finalCB) {
+const disallowedUsernames = function(name, finalCB) {
   async.waterfall([
     // first instantiate the db
     function(callback) {
@@ -39,7 +39,7 @@ var disallowed_usernames = function(name, finalCB) {
 	E.g., two users with the username `foo` should become `foo` and `foo1`. 
 	The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.
 */
-var collision_resolution = function(name, dryRun, finalCB) {
+const collisionResolution = function(name, dryRun, finalCB) {
   _conflictResolution(name, dryRun, 'username duplicates', finalCB);
 }
 
@@ -48,12 +48,12 @@ var collision_resolution = function(name, dryRun, finalCB) {
 	E.g., `grailed` becomes `grailed1`. 
 	The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.
 */
-var disallowed_resolution = function(name, dryRun, finalCB) {
+const disallowedResolution = function(name, dryRun, finalCB) {
   _conflictResolution(name, dryRun, 'invalid usernames', finalCB);
 }
 
-// externalize a function to find duplicates for testing
-var select_duplicates = function(name, finalCB) {
+// expose a function to find duplicates for testing
+const selectDuplicates = function(name, finalCB) {
   async.waterfall([
     // first instantiate the db
     function(callback) {
@@ -182,7 +182,7 @@ function _updateRows(db, data, table, column, callback) {
       vals.push(val.username);
       ids.push(val.id);
     });
-    // since we are limited to 999 variables per SQLite statement but have all unique values,
+    // since we are limited to 1000 variables per SQLite statement but have all unique values,
     // we need to break out data into multiple update queries while minimizing the total number of UPDATE statements.
     let starts = [];
     let curr = 0;
@@ -239,10 +239,10 @@ function _closeDB(db, callback) {
 
 // table of all exported functions
 const calls = {
-  disallowed_usernames: disallowed_usernames,
-  collision_resolution: collision_resolution,
-  disallowed_resolution: disallowed_resolution,
-  select_duplicates: select_duplicates
+  disallowed_usernames: disallowedUsernames,
+  collision_resolution: collisionResolution,
+  disallowed_resolution: disallowedResolution,
+  select_duplicates: selectDuplicates
 }
 
 module.exports = calls;
