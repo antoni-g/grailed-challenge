@@ -32,6 +32,10 @@ There is also an ```npm test``` script that will run a ```mocha``` test checking
 
 
 
+
+
+
+
 ## Solutions
 The question solutions ```grailed_interface.js```. This file contains the three methods that return the correct solutions for each question, and includes the direct database interface. Since the questions have overlapping logical steps taken towards their solutions, their functions each have code reused as often as possible. SQL queries themselves are organized in ```queries.js``` helps us programmatically pass the target tables and desired values to construct queries and are abstracted to be reused as often as possible.
 
@@ -47,7 +51,7 @@ The question solutions ```grailed_interface.js```. This file contains the three 
 
 ```disallowedResolution = function(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to ```_conflictResolution```, listed below. 
 
-** _conflictResolution **
+<b> _conflictResolution </b>
 
 ```_conflictResolution(name, dryRun, dataSet, finalCB)``` - This method wraps the logic to solve both questions 2 and 3, only with different criteria. Since the only difference between questions two and three is whether the data set is duplicates or rows that contain usernames in ```disallowed_usernames```, first the necessary query is constructed and run to get the resultant matches.
 
@@ -64,12 +68,20 @@ Otherwise, once all conflicts have been resolved, an update query is constructed
 
 
 
+
+
+
+
 ## Design Notes & Style
 The app uses the available ```sqlite3``` node.js module available on npm to do the brunt of its work. This library is written using callbacks to handle asynchronous events which plays nicely with the basic Node environment, so callbacks are used consistently through the project. The ```asyc``` library, and especially the ```waterfall``` method help maintain code clarity and prevent potential callback hell through deeply nested callback logic.
 
 As stated above, the app tries to abstract methods to as generic as possible until absolutely necessary, allowing for code re-use and modularity.
 
 Casing is handled as camel casing representing in-file values, while exports are handled through snake case/underscores to represent a value imported from another file. An underscore, '_' before a method name in the interface denote internal/private methods that are not exported.
+
+
+
+
 
 
 
@@ -81,5 +93,9 @@ The test file works through each question and asserts the state of the data in t
 Each question is tested on a fresh copy of the original database. This is done by simply overwriting the ```grailed-exercise-test.sqlite3``` file with a copy of ```grailed-exercise.sqlite3```, the original as-given database. 
 
 Assertion in the test quite checks the existence of data, the size of the results sets, the type of data returned, and when practical the direct result against target values.
+
+
+
+
 
 ## Experience and General Thoughts
