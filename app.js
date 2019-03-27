@@ -88,7 +88,7 @@ function dryPrompt(tgt) {
 
 // handlers for input events
 function outputDisallowed() {
-  grailed_interface.disallowed_usernames(`./db/grailed-exercise-live.sqlite3`, (err,res) => {
+  grailed_interface.disallowed_usernames(`./db/grailed-exercise-live.sqlite3`, (err, res) => {
       if (err) {
         console.log(`An error occured processing this question.`);
         log(`Error outputting for outputDisallowed: ${err}`);
@@ -100,7 +100,7 @@ function outputDisallowed() {
 }
 
 function resolveDuplicates(dry) {
-  grailed_interface.collision_resolution(`./db/grailed-exercise-live.sqlite3`, dry, (err,res) => {
+  grailed_interface.collision_resolution(`./db/grailed-exercise-live.sqlite3`, dry, (err, res) => {
       if (err) {
         console.log(`An error occured processing this question.`);
         log(`Error outputting for resolveDuplicates: ${err}`);
@@ -112,7 +112,7 @@ function resolveDuplicates(dry) {
 }
 
 function resolveDisallowed(dry) {
-  grailed_interface.disallowed_resolution(`./db/grailed-exercise-live.sqlite3`, dry, (err,res) => {
+  grailed_interface.disallowed_resolution(`./db/grailed-exercise-live.sqlite3`, dry, (err, res) => {
       if (err) {
         console.log(`An error occured processing this question.`);
         log(`Error outputting for resolveDisallowed: ${err}`);
@@ -161,7 +161,7 @@ function checkDB(cb) {
 }
 
 function createDB(cb) {
-  copy_file.copy_file(`./db/grailed-exercise.sqlite3`,`./db/grailed-exercise-live.sqlite3`, (err,res) => {
+  copy_file.copy_file(`./db/grailed-exercise.sqlite3`,`./db/grailed-exercise-live.sqlite3`, (err, res) => {
     if (err) {
       console.log(`There was an error resetting the database.`);
       log(`Error resetting db: `+err);
@@ -190,5 +190,5 @@ function outputRows(input) {
   });
   // reaching the end of this method means the function has finished;
   log(`output achieved, closing with no errors.`)
-  process.exit()
+  process.exit();
 }

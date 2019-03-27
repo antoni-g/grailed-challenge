@@ -1,5 +1,5 @@
 // returns a SQL query to select duplicated rows based on a target column in a target table
-var selectDuplicates = function(table,column) {
+var selectDuplicates = function(table, column) {
   return `SELECT *
   FROM ${table}
   WHERE ${column} IN (

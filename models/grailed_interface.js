@@ -11,26 +11,26 @@ const disallowedUsernames = function(name, finalCB) {
   async.waterfall([
     // first instantiate the db
     function(callback) {
-      _instantiateDB(name,(err,db) => {
-        callback(err,db)
+      _instantiateDB(name,(err, db) => {
+        callback(err, db);
       });
     },
     // then submit the query
     function(db,callback) {
       const query = queries.select_matches(`users`, `disallowed_usernames`, `username`,` invalid_username`);
       db.all(query, (err, rows) => {
-        callback(err,db,rows);
+        callback(err, db, rows);
       });
     },
     // close the db
-    function(db,rows,callback) {
+    function(db, rows, callback) {
       _closeDB(db, (err) => {
-        callback(err,rows)
+        callback(err, rows);
       });
     }
   ], function(err, result) {
     // finally, pass over the result
-    finalCB(err,result);
+    finalCB(err, result);
   });
 }
 
@@ -57,21 +57,21 @@ const selectDuplicates = function(name, finalCB) {
   async.waterfall([
     // first instantiate the db
     function(callback) {
-      _instantiateDB(name,(err,db) => {
-        callback(err,db)
+      _instantiateDB(name,(err, db) => {
+        callback(err, db);
       });
     },
     // return all duplicate rows
-    function(db,callback) {
+    function(db, callback) {
       // case logic
-      let targetQuery = queries.select_duplicates(`users`,`username`);
+      let targetQuery = queries.select_duplicates(`users`, `username`);
       db.all(targetQuery, (err, rows) => {
-        callback(err,rows);
+        callback(err, rows);
       });
     }
   ], function(err, result) {
     // finally, pass over the result
-    finalCB(err,result);
+    finalCB(err, result);
   });
 }
 
@@ -81,12 +81,12 @@ function _conflictResolution(name, dryRun, dataSet, finalCB) {
   async.waterfall([
     // first instantiate the db
     function(callback) {
-      _instantiateDB(name,(err,db) => {
-        callback(err,db)
+      _instantiateDB(name, (err, db) => {
+        callback(err, db);
       });
     },
     // return all duplicate rows
-    function(db,callback) {
+    function(db, callback) {
       // case logic
       let targetQuery;
       switch(dataSet) {
@@ -100,31 +100,31 @@ function _conflictResolution(name, dryRun, dataSet, finalCB) {
           callback(`An invalid dataSet argument has been passed for collision resolution.`);
       }
       db.all(targetQuery, (err, rows) => {
-        callback(err,db,rows,targetQuery);
+        callback(err, db, rows, targetQuery);
       });
     },
     // find the set of [duplicates][*] for potential renaming collsions
-    function(db,rows,targetQuery,callback) {
-      const collisionQuery = queries.select_matches_extend(`users`,`(${targetQuery})`,`username`,`username`);
+    function(db, rows, targetQuery, callback) {
+      const collisionQuery = queries.select_matches_extend(`users`, `(${targetQuery})`, `username`, `username`);
        db.all(collisionQuery, (err, collisionRows) => {
-          callback(err,db,rows,collisionRows);
+          callback(err, db, rows, collisionRows);
        });
     },
     // resolve renaming
-    function(db,rows,collisionRows,callback) {
-      _renameCollisions(db,rows,collisionRows,dryRun, (err,result) => {
-        callback(err,db,result);
+    function(db, rows, collisionRows, callback) {
+      _renameCollisions(db, rows, collisionRows, dryRun, (err, result) => {
+        callback(err, db, result);
       });
     },
     // close the db
-    function(db,result,callback) {
+    function(db, result, callback) {
       _closeDB(db, (err) => {
-        callback(err,result)
+        callback(err, result)
       });
     }
   ], function(err, result) {
     // finally, pass over the result
-    finalCB(err,result);
+    finalCB(err, result);
   });
 }
 
@@ -159,12 +159,12 @@ function _renameCollisions(db, rows, collisionRows, dryRun, callback) {
       }
       else {
         log(msg);
-        callback(null,rows);
+        callback(null, rows);
       }
     });
   }
   else {
-    callback(null,rows);
+    callback(null, rows);
   }
 }
 
@@ -172,7 +172,7 @@ function _renameCollisions(db, rows, collisionRows, dryRun, callback) {
 // data is expected as a collection of {id:$, column:$} objects
 function _updateRows(db, data, table, column, callback) {
   if (!data || data.length == 0) {
-    callback(null,`Nothing needed updating.`)
+    callback(null, `Nothing needed updating.`)
   }
   else {
     let vals = []
@@ -204,9 +204,9 @@ function _updateRows(db, data, table, column, callback) {
           }
       });
       // final cb called when update is done
-    }, (err,res) => {
+    }, (err, res) => {
         // when done, call the top level callback
-        callback(err,`Done updating.`);
+        callback(err, `Done updating.`);
     });
   }
 }
@@ -215,11 +215,11 @@ function _updateRows(db, data, table, column, callback) {
 function _instantiateDB(name, callback) {
 	const db = new sqlite3.Database(name, (err) => {
     if (err) {
-      callback(err,null);
+      callback(err, null);
     }
     else {
       log(`Connected to the in-memory SQlite database: ${db.filename}`);
-      callback(null,db);
+      callback(null, db);
     }    
   });
 }
