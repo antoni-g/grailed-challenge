@@ -1,6 +1,6 @@
 
 ## File Structure
-```
+```html
 <pre>
 <b>grailed_challenge/</b>
   <b>db/</b>
