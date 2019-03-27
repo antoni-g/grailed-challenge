@@ -159,7 +159,7 @@ function resetDB(done) {
     if (err) return done(err);
     expect(res)
       .to.be.a('string')
-      .and.equal('./db/grailed-exercise.sqlite3 successfully copied into ./db/grailed-exercise-test.sqlite3');
+      .and.equal('successfully copied file ./db/grailed-exercise.sqlite3 into ./db/grailed-exercise-test.sqlite3');
     done();
   });
 }

@@ -1,7 +1,7 @@
-const async = require("async");
-const sqlite3 = require('sqlite3').verbose();
-const queries = require('./queries.js'); 
-const log = require('debug')('grailed_interface');
+const async = require(`async`);
+const sqlite3 = require(`sqlite3`).verbose();
+const queries = require(`./queries.js`); 
+const log = require(`debug`)(`grailed_interface`);
 
 /*
 	Write a function that finds all users with disallowed usernames. 
@@ -17,7 +17,7 @@ const disallowedUsernames = function(name, finalCB) {
     },
     // then submit the query
     function(db,callback) {
-      const query = queries.select_matches('users', 'disallowed_usernames', 'username',' invalid_username');
+      const query = queries.select_matches(`users`, `disallowed_usernames`, `username`,` invalid_username`);
       db.all(query, (err, rows) => {
         callback(err,db,rows);
       });
@@ -40,7 +40,7 @@ const disallowedUsernames = function(name, finalCB) {
 	The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.
 */
 const collisionResolution = function(name, dryRun, finalCB) {
-  _conflictResolution(name, dryRun, 'username duplicates', finalCB);
+  _conflictResolution(name, dryRun, `username duplicates`, finalCB);
 }
 
 /*
@@ -49,7 +49,7 @@ const collisionResolution = function(name, dryRun, finalCB) {
 	The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.
 */
 const disallowedResolution = function(name, dryRun, finalCB) {
-  _conflictResolution(name, dryRun, 'invalid usernames', finalCB);
+  _conflictResolution(name, dryRun, `invalid usernames`, finalCB);
 }
 
 // expose a function to find duplicates for testing
@@ -64,7 +64,7 @@ const selectDuplicates = function(name, finalCB) {
     // return all duplicate rows
     function(db,callback) {
       // case logic
-      let targetQuery = queries.select_duplicates('users','username');
+      let targetQuery = queries.select_duplicates(`users`,`username`);
       db.all(targetQuery, (err, rows) => {
         callback(err,rows);
       });
@@ -90,14 +90,14 @@ function _conflictResolution(name, dryRun, dataSet, finalCB) {
       // case logic
       let targetQuery;
       switch(dataSet) {
-        case 'username duplicates': 
-          targetQuery = queries.select_duplicates('users','username');
+        case `username duplicates`: 
+          targetQuery = queries.select_duplicates(`users`,`username`);
           break;
-        case 'invalid usernames':
-          targetQuery = queries.select_matches('users','disallowed_usernames','username','invalid_username');
+        case `invalid usernames`:
+          targetQuery = queries.select_matches(`users`,`disallowed_usernames`,`username`,`invalid_username`);
           break;
         default:
-          callback('An invalid dataSet argument has been passed for collision resolution.');
+          callback(`An invalid dataSet argument has been passed for collision resolution.`);
       }
       db.all(targetQuery, (err, rows) => {
         callback(err,db,rows,targetQuery);
@@ -105,7 +105,7 @@ function _conflictResolution(name, dryRun, dataSet, finalCB) {
     },
     // find the set of [duplicates][*] for potential renaming collsions
     function(db,rows,targetQuery,callback) {
-      const collisionQuery = queries.select_matches_extend('users','('+targetQuery+')','username','username');
+      const collisionQuery = queries.select_matches_extend(`users`,`(${targetQuery})`,`username`,`username`);
        db.all(collisionQuery, (err, collisionRows) => {
           callback(err,db,rows,collisionRows);
        });
@@ -153,7 +153,7 @@ function _renameCollisions(db, rows, collisionRows, dryRun, callback) {
   });
   if (!dryRun) {
     // db update
-    _updateRows(db, rows, 'users', 'username', (err,msg) => {
+    _updateRows(db, rows, `users`, `username`, (err,msg) => {
       if (err) {
         callback(err);
       }
@@ -172,7 +172,7 @@ function _renameCollisions(db, rows, collisionRows, dryRun, callback) {
 // data is expected as a collection of {id:$, column:$} objects
 function _updateRows(db, data, table, column, callback) {
   if (!data || data.length == 0) {
-    callback(null,'Nothing needed updating.')
+    callback(null,`Nothing needed updating.`)
   }
   else {
     let vals = []
@@ -197,16 +197,16 @@ function _updateRows(db, data, table, column, callback) {
       let query = queries.update_vals(table, column, tVals, tIds);
       db.run(query, tVals.concat(tIds), (err) => {
           if (err) {
-              internalCB(err,'Error updatings items from: '+start+' to '+(start+333));
+              internalCB(err,`Error updatings items from: ${start} to ${(start+333)}`);
           }
           else {
-              internalCB(null,'done items from: '+start+' to '+(start+333));
+              internalCB(null,`done items from: ${start} to ${(start+333)}`);
           }
       });
       // final cb called when update is done
     }, (err,res) => {
         // when done, call the top level callback
-        callback(err,'Done updating.');
+        callback(err,`Done updating.`);
     });
   }
 }
@@ -218,7 +218,7 @@ function _instantiateDB(name, callback) {
       callback(err,null);
     }
     else {
-      log('Connected to the in-memory SQlite database: ' + db.filename);
+      log(`Connected to the in-memory SQlite database: ${db.filename}`);
       callback(null,db);
     }    
   });
@@ -231,7 +231,7 @@ function _closeDB(db, callback) {
       callback(err);
     }
     else {
-      log('Closed the connection to the in-memory SQlite database: ' + db.filename);
+      log(`Closed the connection to the in-memory SQlite database: ${db.filename}`);
       callback();
     }
   });

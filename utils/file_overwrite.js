@@ -1,23 +1,28 @@
 var fs = require('fs');
+const log = require('debug')('file_overwrite');
 
-var copyFile = function(src,tgt,callback) {
+var copyFile = function(src, tgt, callback) {
   fs.copyFile(src, tgt, (err) => {
     if (err) {
+      log(`error copying file ${src} into ${tgt}`);
       callback(err);
     }
     else {
-      callback(null, src+' successfully copied into '+tgt);
+      log(`successfully copied file ${src} into ${tgt}`);
+      callback(null, `successfully copied file ${src} into ${tgt}`);
     }
 	});
 }
 
-var delFile = function(tgt,callback) {
+var delFile = function(tgt, callback) {
   fs.unlink(tgt, (err) => {
     if (err) {
+      log(`error deleting file ${tgt}`);
       callback(err);
     }
     else {
-      callback(null,'successfully deleted '+tgt);
+      log(`successfully deleted file ${tgt}`);
+      callback(null, `successfully deleted ${tgt}`);
     }
   });
 }
