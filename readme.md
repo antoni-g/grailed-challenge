@@ -51,14 +51,14 @@ The question solutions ```grailed_interface.js```. This file contains the three 
 
 **2 Write a function that resolves all username collisions. E.g., two users with the username `foo` should become `foo` and `foo1`. The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.**
 
-```collisionResolution = function(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to 
+```collisionResolution(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to 
 ```_conflictResolution```, listed below.
 
 <br/>
 
 **3 Write a function that resolves all disallowed usernames. E.g., `grailed` becomes `grailed1`. The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.**
 
-```disallowedResolution = function(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to ```_conflictResolution```, listed below. 
+```disallowedResolution(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to ```_conflictResolution```, listed below. 
 
 <br/>
 
