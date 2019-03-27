@@ -85,7 +85,7 @@ Otherwise, once all conflicts have been resolved, an update query is constructed
 ## Design Notes & Style
 The app's main driver is a simple CLI interface. This is simply exposing data and imports and exports all "work" from the interface.
 
-The app uses the available ```sqlite3``` node.js package available on npm to do the brunt of its work. This library is written using callbacks to handle asynchronous events which plays nicely with the basic Node environment, so callbacks are used consistently through the project. The ```asnyc``` library, and especially the ```waterfall``` method help maintain code clarity and prevent potential callback hell through deeply nested callback logic.
+The app uses the available ```sqlite3``` node.js package available on npm to do the brunt of its work. This library is written using callbacks to handle asynchronous events which plays nicely with the basic Node environment, so callbacks are used consistently through the project. The ```async``` library, and especially the ```waterfall``` method help maintain code clarity and prevent potential callback hell through deeply nested callback logic.
 
 As stated above, the app tries to abstract methods to as generic as possible until absolutely necessary, allowing for code re-use and modularity.
 
