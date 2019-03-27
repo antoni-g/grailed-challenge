@@ -73,6 +73,8 @@ Renaming is done by first mapping the usernames contained in our extended matche
   2. Check if this potential rename already exists - if it does, repeat step 1.
   3. Store this username in the target update collections, and store it in our Set to prevent future collisions during this run.
 
+Assuming our usernames are limited to some character limit (such as 32 characters), we have next to no chance of running out of space given the huge maximum size of a varchar in SQLite.
+
 If this is a dry run, the updated data is return but not pushed to the database.
 
 Otherwise, once all conflicts have been resolved, an update query is constructed. To preserve atomicty of updates, the program aims to generate as few updates as possible. SQLite is limited to 1000 variables per statement, so a statement is constructed for each 333 values that need updating and run. If at any point an update fails, the process does not continue.
