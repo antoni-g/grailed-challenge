@@ -1,6 +1,5 @@
 
 ## File Structure
-```html
 <pre>
 <b>grailed_challenge/</b>
   <b>db/</b>
@@ -19,7 +18,7 @@
   test.js
   readme.md
 </pre>
-```
+
 ## Running the App
 The app can be run from the command line, following the ```npm install``` command to install dependencies - using a ```production``` flag will not install testing libraries.
 
