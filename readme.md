@@ -24,8 +24,7 @@ The app can be run from the command line, following the ```npm install``` comman
 
 The app can be run with either ```npm start``` or ```node app.js```.
 
-Debug output is instead handled with the ```debug``` package, so ```DEBUG='grailed_interface','cli' node app.js
-``` can be used to output color-formatted, file and time stamped logging information to the console.
+Debug output is instead handled with the ```debug``` package, so ```DEBUG='grailed_interface','cli' node app.js``` can be used to output color-formatted, file and time stamped logging information to the console.
 
 There is also an ```npm test``` script that will run a ```mocha``` test checking all three questions.
 
