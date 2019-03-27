@@ -1,5 +1,8 @@
 
 ## File Structure
+
+To not expose the database publically on Github, the original ```grailed-exercise.sqlite3``` must be placed into the ```/db``` subfolder. The live and testing copies will be made by the app as necessary, and the original will not be edited, only used as a reference.
+
 <pre>
 <b>grailed_challenge/</b>
   <b>db/</b>
@@ -25,11 +28,12 @@
 ## Running the App
 The app can be run from the command line, following the ```npm install``` command to install dependencies - using a ```production``` flag will not install testing packages.
 
-The app can be run with either ```npm start``` or ```node app.js```.
+The app can be run with either ```npm start``` or ```node app.js```. As stated above, the original ```grailed-exercise.sqlite3``` must be placed into the ```/db``` subfolder.
 
-Debug output is instead handled with the ```debug``` package, so ```DEBUG='grailed_interface','cli' node app.js``` can be used to output color-formatted, file and time stamped logging information to the console.
+Debug output is instead handled with the ```debug``` package, so ```DEBUG=* node app.js``` can be used to output color-formatted, file and time stamped logging information to the console.
 
-There is also an ```npm test``` script that will run a ```mocha``` test checking all three questions.
+There is also an ```npm test``` script that will run a ```mocha``` test checking all three questions. Testing can also be run with debug input, however ```DEBUG='grailed_interface','cli','file_overwrite' npm test``` must be used or else ```mocha```, which also uses debug, will overwhelm with its logging.
+
 
 <br/>
 <br/>
@@ -47,14 +51,14 @@ The question solutions ```grailed_interface.js```. This file contains the three 
 
 **2 Write a function that resolves all username collisions. E.g., two users with the username `foo` should become `foo` and `foo1`. The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.**
 
-```collisionResolution = function(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to 
+```collisionResolution(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to 
 ```_conflictResolution```, listed below.
 
 <br/>
 
 **3 Write a function that resolves all disallowed usernames. E.g., `grailed` becomes `grailed1`. The function accepts an optional "dry run" argument that will print the affected rows to the console, not commit the changes to the db.**
 
-```disallowedResolution = function(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to ```_conflictResolution```, listed below. 
+```disallowedResolution(name, dryRun, finalCB)```- This method shares the same logic as 3, so abstracts this to ```_conflictResolution```, listed below. 
 
 <br/>
 
@@ -69,7 +73,9 @@ Renaming is done by first mapping the usernames contained in our extended matche
   2. Check if this potential rename already exists - if it does, repeat step 1.
   3. Store this username in the target update collections, and store it in our Set to prevent future collisions during this run.
 
-If this is a dry run, the updated data is return but not pushed to the database.
+Assuming our usernames are limited to some character limit (such as 32 characters), we have a functionally 0 chance of failing to resolve collisions given the huge maximum size of a varchar in SQLite.
+
+If this is a dry run, the updated data is returned but not pushed to the database.
 
 Otherwise, once all conflicts have been resolved, an update query is constructed. To preserve atomicty of updates, the program aims to generate as few updates as possible. SQLite is limited to 1000 variables per statement, so a statement is constructed for each 333 values that need updating and run. If at any point an update fails, the process does not continue.
 
@@ -79,7 +85,7 @@ Otherwise, once all conflicts have been resolved, an update query is constructed
 ## Design Notes & Style
 The app's main driver is a simple CLI interface. This is simply exposing data and imports and exports all "work" from the interface.
 
-The app uses the available ```sqlite3``` node.js package available on npm to do the brunt of its work. This library is written using callbacks to handle asynchronous events which plays nicely with the basic Node environment, so callbacks are used consistently through the project. The ```asyc``` library, and especially the ```waterfall``` method help maintain code clarity and prevent potential callback hell through deeply nested callback logic.
+The app uses the available ```sqlite3``` node.js package available on npm to do the brunt of its work. This library is written using callbacks to handle asynchronous events which plays nicely with the basic Node environment, so callbacks are used consistently through the project. The ```async``` library, and especially the ```waterfall``` method help maintain code clarity and prevent potential callback hell through deeply nested callback logic.
 
 As stated above, the app tries to abstract methods to as generic as possible until absolutely necessary, allowing for code re-use and modularity.
 
@@ -103,8 +109,10 @@ Assertion in the test quite checks the existence of data, the size of the result
 
 I come at this project feeling decently comfortable with the Node.js environment. For this kind of asynchronous work, I feel most comfortable using Javascript, so I approached the problem knowing I would be able to find all necessary packages.
 
-So far, my experiences have heavily leaned towards NoSQL in practice. I feel comfortable with SQL, but I haven't used SQLite before. Some things, like the collision/disallowed renaming, I would have like to handled with programmatic logic within a SQL statement (using a temp table and a WHILE clause, most likely). I dislike that I had to handle the updates in multiple statements (since the database could be modified in the meantime, meaning either the updates could overwrite or the state of the database could still contain the errors we are hoping to fix), but by making the assumption these methods would be run on data that is not live (ie, in maitenance) and that this database statement would probably be avoided in development through constraints anyways, I feel okay with my solution as it works nicely to display some JS as well as some SQL. 
+So far, my experiences have heavily leaned towards NoSQL in practice. I feel comfortable with SQL, but I haven't used SQLite before. Some things, like the collision/disallowed renaming, I would have like to handled renaming in one statement with programmatic logic within a SQL statement (using a TEMP table and a WHILE clause, most likely). I also ran into some issues with functions like REGEX reserved but not defined, and the inability solve this with a defined user functions with the standard SQLite library for NodeJS (the pull requests to extend the library have all been rejected). I had to use LIKE % rather than REGEX so our extended matches for updating are slightly less accurate as is when returned from the database - "grailedee" is in the SELECT along with any actual potential collision like "grailed11". Given that we use a Set in JS, this isn't a huge performance loss in the end.
 
-I also originally approached this question by hoping to expose the data, methods, and results with a simple ssr React, or a paired client/server. However, in the interest of time and the spirit of the question (avoiding a 3 minute ```npm install``` and wrangling with Babel and Webpack just to get you the data). I made the assumption that this would be seen by a developer and a UI for a less technical user isn't necessary here. However, if that would be something you'd be interested in seeing, I'd be happy to continue working in that direction, but I feel comfortable with my current implementation as-is.
+I had to handle the updates in multiple statements. Since the database could be modified in the meantime, either the updates could overwrite new data or the state of the database could still contain the errors we are hoping to fix once done. However, by making the assumption these methods would be run on data that is not live (ie, in maitenance) and that this database statement would probably be avoided in development through constraints anyways, I feel okay with my solution as it works to display some JS as well as some SQL. 
 
-Either way, thanks for your time! Very excited to hear how this goes and I appreciate any and all feedback.
+I also originally approached this question by hoping to expose the data, methods, and results with a simple ssr React, or a paired client/server. However, in the interest of time and the spirit of the question I went with this approach instead. It also avoids a 5 minute ```npm install``` and wrangling with Babel and Webpack just to get you the data. I made the assumption that this would be seen by a developer and a UI for a less technical user isn't necessary here. However, if that would be something you'd be interested in seeing, I'd be happy to continue working in that direction, but I feel comfortable with my current implementation as-is.
+
+Either way, thanks for your time! Very excited to hear how this goes and I appreciate any and all feedback. If there are any errors or flaws in my thinking, I'd love to know how to improve.

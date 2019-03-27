@@ -126,9 +126,11 @@ function resolveDisallowed(dry) {
 function resetDB() {
   createDB((err) => {
     if (err) {
+      console.log(`There was an error with resetting the database.`);
       log(`closing with errors.`);
     }
     else {
+      console.log(`Successfully reset the database.`);
       log(`closing with no errors.`);
     }
     process.exit();
@@ -140,6 +142,7 @@ function checkDB(cb) {
   const path = `./db/grailed-exercise-live.sqlite3`
   try {
     if (!fs.existsSync(path)) {
+      console.log(`Creating a live copy of the database.`)
       log(`db live copy did not exist, creating...`);
       createDB((err) => {
         if (err) {
@@ -160,12 +163,11 @@ function checkDB(cb) {
 function createDB(cb) {
   copy_file.copy_file(`./db/grailed-exercise.sqlite3`,`./db/grailed-exercise-live.sqlite3`, (err,res) => {
     if (err) {
-      console.log(`There was an error reseting the database.`);
+      console.log(`There was an error resetting the database.`);
       log(`Error resetting db: `+err);
       cb(err);
     }
     else {
-      console.log(`Successfully reset the database.`);
       log(`reset the db with no errors.`);
       cb();
     }
