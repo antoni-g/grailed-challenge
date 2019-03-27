@@ -1,5 +1,8 @@
 
 ## File Structure
+
+To not expose the database publically on Github, the original ```grailed-exercise.sqlite3``` must be placed into the ```/db``` subfolder. The live and testing copies will be made by the app as necessary, and the original will not be edited, only used as a reference.
+
 <pre>
 <b>grailed_challenge/</b>
   <b>db/</b>
