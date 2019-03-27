@@ -115,4 +115,4 @@ I had to handle the updates in multiple statements. Since the database could be 
 
 I also originally approached this question by hoping to expose the data, methods, and results with a simple ssr React, or a paired client/server. However, in the interest of time and the spirit of the question I went with this approach instead. It also avoids a 5 minute ```npm install``` and wrangling with Babel and Webpack just to get you the data. I made the assumption that this would be seen by a developer and a UI for a less technical user isn't necessary here. However, if that would be something you'd be interested in seeing, I'd be happy to continue working in that direction, but I feel comfortable with my current implementation as-is.
 
-Either way, thanks for your time! Very excited to hear how this goes and I appreciate any and all feedback.
+Either way, thanks for your time! Very excited to hear how this goes and I appreciate any and all feedback. If there are any errors or flaws in my thinking, I'd love to know how to improve.
