@@ -107,6 +107,9 @@ function _conflictResolution(name, dryRun, dataSet, finalCB) {
     function(db, rows, targetQuery, callback) {
       const collisionQuery = queries.select_matches_extend(`users`, `(${targetQuery})`, `username`, `username`);
        db.all(collisionQuery, (err, collisionRows) => {
+          if (dataSet === `invalid usernames`) {
+            collisionRows = collisionRows.concat(rows);
+          }
           callback(err, db, rows, collisionRows);
        });
     },
@@ -141,15 +144,21 @@ function _renameCollisions(db, rows, collisionRows, dryRun, callback) {
   // check for collisions, and if existing, append again
   // format data for placeholder syntax
   (rows).map((el) => {
-    let newUser = el.username + Math.floor(Math.random()*10);
     // this loop guarantees we have unique username resolutions
     // assuming that our usernames are limited to some character length significantly lower than
     // max str length in our db, it is guaranteed to work
-    while (collisionSet.has(newUser)) {
-      newUser = el.username + Math.floor(Math.random()*10);
+    if (!collisionSet.has(el.username)) {
+      collisionSet.add(el.username);
     }
-    collisionSet.add(newUser);
-    el.username = newUser;
+    else {
+      let newUser = el.username + Math.floor(Math.random()*10);
+      while (collisionSet.has(newUser)) {
+        newUser = el.username + Math.floor(Math.random()*10);
+      }
+      collisionSet.add(newUser);
+      el.username = newUser;
+    }
+    
   });
   if (!dryRun) {
     // db update
